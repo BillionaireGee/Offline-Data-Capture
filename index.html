@@ -34,23 +34,20 @@
     .pagination button { margin: 0 3px; padding: 6px 12px; border-radius: 6px; border: none; background: #ddd; cursor: pointer; }
     .pagination button.active { background: #1877F2; color: #fff; }
 
-    /* iOS/Android install button fixed at bottom */
+    /* iOS/Android install button/banner below form */
     #installBtn {
       display: none;
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
+      max-width: 400px;
+      margin: 10px auto 20px;
+      padding: 12px;
       background: #2563eb;
       color: white;
-      border: none;
-      padding: 12px 16px;
       border-radius: 12px;
-      cursor: pointer;
+      border: none;
       font-size: 14px;
+      cursor: pointer;
       text-align: center;
-      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
   </style>
 </head>
@@ -167,6 +164,7 @@
     if(isiOS()){
       installBtn.style.display='block';
       installBtn.textContent="📲 On iOS: Tap 'Share' → 'Add to Home Screen'";
+      // Optional: can disappear after 10s or after click
       installBtn.onclick=()=>{ alert("Use the Share button in Safari and select 'Add to Home Screen'"); };
     } else {
       window.addEventListener("beforeinstallprompt", e=>{
