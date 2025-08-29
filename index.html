@@ -46,7 +46,7 @@
     <button type="submit">Save Entry</button>
   </form>
 
-  <!-- Install PWA button -->
+  <!-- Install PWA button / iOS instruction -->
   <button id="installBtn">📲 Install App</button>
 
   <div class="toolbar">
@@ -71,7 +71,7 @@
     const PAGE_SIZE = 10;
     let currentPage = 1;
 
-    // IndexedDB functions
+    // --- IndexedDB ---
     function openDB() {
       return new Promise((resolve, reject) => {
         const req = indexedDB.open(DB_NAME, DB_VERSION);
@@ -81,12 +81,38 @@
       });
     }
 
-    async function addEntry(data) { const db = await openDB(); const tx = db.transaction(STORE,'readwrite'); tx.objectStore(STORE).add(data); return tx.complete; }
-    async function getAllEntries() { const db = await openDB(); return new Promise((resolve, reject) => { const tx = db.transaction(STORE,'readonly'); const req = tx.objectStore(STORE).getAll(); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); }); }
-    async function deleteEntry(id) { const db = await openDB(); const tx = db.transaction(STORE,'readwrite'); tx.objectStore(STORE).delete(id); return tx.complete; }
-    async function deleteAllEntries() { const db = await openDB(); const tx = db.transaction(STORE,'readwrite'); tx.objectStore(STORE).clear(); return tx.complete; }
+    async function addEntry(data) {
+      const db = await openDB();
+      const tx = db.transaction(STORE,'readwrite');
+      tx.objectStore(STORE).add(data);
+      return tx.complete;
+    }
 
-    // Render functions
+    async function getAllEntries() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE,'readonly');
+        const req = tx.objectStore(STORE).getAll();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function deleteEntry(id) {
+      const db = await openDB();
+      const tx = db.transaction(STORE,'readwrite');
+      tx.objectStore(STORE).delete(id);
+      return tx.complete;
+    }
+
+    async function deleteAllEntries() {
+      const db = await openDB();
+      const tx = db.transaction(STORE,'readwrite');
+      tx.objectStore(STORE).clear();
+      return tx.complete;
+    }
+
+    // --- Render functions ---
     async function renderEntries() {
       const entries = await getAllEntries();
       entries.sort((a,b)=>b.id-a.id);
@@ -110,7 +136,7 @@
 
     async function handleDelete(id){ await deleteEntry(id); renderEntries(); }
 
-    // Form submission
+    // --- Form submission ---
     document.getElementById('entryForm').addEventListener('submit', async e=>{
       e.preventDefault();
       const fd=new FormData(e.target);
@@ -121,17 +147,20 @@
       await addEntry(newEntry); e.target.reset(); renderEntries();
     });
 
-    // CSV export
+    // --- CSV export ---
     document.getElementById('exportCsvBtn').addEventListener('click', async ()=>{
       const entries=await getAllEntries();
       if(!entries.length){ alert("No entries to export."); return; }
       entries.sort((a,b)=>b.id-a.id);
       let csv="Index,Name,Phone,Address\n";
       entries.forEach((e,i)=>{ csv+=`${i+1},"${e.name}","${e.phone}","${e.address}"\n`; });
-      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='entries.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='entries.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     });
 
-    // Delete all
+    // --- Delete all ---
     document.getElementById('deleteAllBtn').addEventListener('click', async ()=>{
       if(confirm("Are you sure you want to delete all entries?")){ await deleteAllEntries(); renderEntries(); }
     });
@@ -145,20 +174,24 @@
     function isiOS(){ return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase()); }
 
     if(isiOS()){
-      installBtn.style.display="flex";
-      installBtn.textContent="📲 On iOS: Tap 'Share' → Add to Home Screen";
-      // No click handler needed for iOS
+      // iOS: show instructions
+      installBtn.style.display = "flex";
+      installBtn.textContent = "📲 On iOS: Tap 'Share' → 'Add to Home Screen'";
+      installBtn.onclick = () => { alert("Use the Share button in Safari and select 'Add to Home Screen'"); };
     } else {
+      // Android/Desktop
       window.addEventListener("beforeinstallprompt",(e)=>{
-        e.preventDefault(); deferredPrompt=e; installBtn.style.display="flex";
+        e.preventDefault();
+        deferredPrompt=e;
+        installBtn.style.display="flex";
       });
       installBtn.addEventListener("click", async ()=>{
-        if(deferredPrompt){
-          installBtn.style.display="none"; deferredPrompt.prompt();
-          const {outcome}=await deferredPrompt.userChoice;
-          console.log("User response to install:", outcome);
-          deferredPrompt=null;
-        }
+        if(!deferredPrompt) return;
+        installBtn.style.display="none";
+        deferredPrompt.prompt();
+        const {outcome}=await deferredPrompt.userChoice;
+        console.log("User response to install:", outcome);
+        deferredPrompt=null;
       });
     }
 
