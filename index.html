@@ -3,238 +3,364 @@
 <head>
   <meta charset="UTF-8">
   <title>Offline Data Capture</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2563eb">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      margin: 20px;
+      background: #f5f7fb;
+      color: #333;
     }
     h1 {
-      color: #2563eb;
-      margin-bottom: 10px;
+      text-align: center;
+      color: #1877F2;
     }
     form {
-      background: white;
+      background: #fff;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 300px;
-      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: 0 auto 20px;
     }
-    input, button {
-      width: 100%;
+    label {
+      display: block;
+      margin: 10px 0;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    input {
       padding: 10px;
-      margin: 6px 0;
-      border-radius: 8px;
+      width: 100%;
       border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 4px;
+      font-size: 14px;
     }
     button {
-      background: #2563eb;
-      color: white;
+      padding: 10px 16px;
       border: none;
+      border-radius: 8px;
+      background: #1877F2;
+      color: white;
+      font-size: 14px;
       cursor: pointer;
+      margin-top: 10px;
     }
     button:hover {
-      background: #1e40af;
+      background: #0f5ed7;
+    }
+    .toolbar {
+      max-width: 60%;
+      margin: 0 auto 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .toolbar button {
+      background: #4caf50;
+      margin-left: 10px;
+    }
+    .toolbar button.delete-all {
+      background: #e53935;
+    }
+    .toolbar button.delete-all:hover {
+      background: #c62828;
     }
     .table-container {
-      width: 60%;
-      max-width: 800px;
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 55%;
+      margin: 0 auto;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      text-align: left;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
     }
     th, td {
-      border-bottom: 1px solid #ddd;
-      padding: 8px;
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      text-align: left;
     }
     th {
-      background: #2563eb;
+      background: #1877F2;
       color: white;
     }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    td button {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    td button:hover {
+      background: #c62828;
+    }
     .pagination {
+      display: flex;
+      justify-content: center;
       margin-top: 15px;
-      text-align: center;
     }
     .pagination button {
-      width: auto;
-      margin: 2px;
-      padding: 8px 12px;
+      margin: 0 3px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background: #ddd;
+      cursor: pointer;
+    }
+    .pagination button.active {
+      background: #1877F2;
+      color: #fff;
+    }
+    #installBtn {
+      display: none;
+      background: white;
+      border: 2px solid #1877F2;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 15px auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #installBtn img {
+      width: 20px;
+      height: 20px;
     }
   </style>
 </head>
 <body>
+    <br><br><br><br>
   <h1>Offline Data Capture</h1>
 
-  <form id="dataForm">
-    <input type="text" id="name" placeholder="Name" required>
-    <input type="tel" id="phone" placeholder="Phone" pattern="[0-9]+" required>
-    <input type="text" id="address" placeholder="Address" required>
+  <form id="entryForm">
+    <label>
+      Name:
+      <input type="text" name="name" required>
+    </label>
+    <label>
+      Phone:
+      <input type="number" name="phone" required inputmode="numeric" pattern="[0-9]*" maxlength="11" oninput="this.value=this.value.slice(0,11)">
+    </label>
+    <label>
+      Address:
+      <input type="text" name="address" required>
+    </label>
     <button type="submit">Save Entry</button>
   </form>
 
-  <div>
+  <!-- Install PWA button -->
+  <button id="installBtn">
+    <img src="icons/icon-192.png" alt="Install Icon">
+    Install App
+  </button>
+
+  <div class="toolbar">
     <button id="exportCsvBtn">Export CSV</button>
-    <button id="importCsvBtn">Import CSV</button>
-    <input type="file" id="csvFileInput" accept=".csv" style="display:none">
-    <button id="clearBtn">Clear All</button>
+    <button id="deleteAllBtn" class="delete-all">Delete All</button>
   </div>
 
   <div class="table-container">
-    <table id="dataTable">
+    <table>
       <thead>
         <tr>
-          <th>#</th><th>Name</th><th>Phone</th><th>Address</th>
+          <th>#</th><th>Name</th><th>Phone</th><th>Address</th><th>Action</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="entriesBody"></tbody>
     </table>
     <div class="pagination" id="pagination"></div>
   </div>
 
   <script>
-    // ---- IndexedDB Setup ----
-    let db;
-    const request = indexedDB.open("DataCaptureDB", 1);
-    request.onupgradeneeded = event => {
-      db = event.target.result;
-      const store = db.createObjectStore("entries", { keyPath: "id", autoIncrement: true });
-      store.createIndex("phone", "phone", { unique: true });
-      store.createIndex("name", "name", { unique: true });
+const DB_NAME = 'offline_db';
+const STORE = 'entries';
+const DB_VERSION = 1;
+const PAGE_SIZE = 10;
+let currentPage = 1;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
     };
-    request.onsuccess = event => { db = event.target.result; displayEntries(); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function addEntry(data) {
+  const db = await openDB();
+  const tx = db.transaction(STORE, 'readwrite');
+  tx.objectStore(STORE).add(data);
+  return tx.complete;
+}
+async function getAllEntries() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function deleteEntry(id) {
+  const db = await openDB();
+  const tx = db.transaction(STORE, 'readwrite');
+  tx.objectStore(STORE).delete(id);
+  return tx.complete;
+}
+async function deleteAllEntries() {
+  const db = await openDB();
+  const tx = db.transaction(STORE, 'readwrite');
+  tx.objectStore(STORE).clear();
+  return tx.complete;
+}
 
-    // ---- Helpers ----
-    function addEntry(entry) {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction("entries", "readwrite");
-        const store = tx.objectStore("entries");
-        const idxPhone = store.index("phone");
-        const idxName = store.index("name");
-        Promise.all([
-          new Promise(r => idxPhone.get(entry.phone).onsuccess = e => r(e.target.result)),
-          new Promise(r => idxName.get(entry.name).onsuccess = e => r(e.target.result))
-        ]).then(([phoneExists, nameExists]) => {
-          if (phoneExists || nameExists) { alert("Duplicate name or phone not allowed!"); reject(); }
-          else { store.add(entry).onsuccess = () => resolve(); }
-        });
-      });
-    }
-    function getAllEntries() {
-      return new Promise(resolve => {
-        const tx = db.transaction("entries", "readonly");
-        const store = tx.objectStore("entries");
-        const req = store.getAll();
-        req.onsuccess = e => resolve(e.target.result);
-      });
-    }
-    function clearEntries() {
-      const tx = db.transaction("entries", "readwrite");
-      tx.objectStore("entries").clear().onsuccess = () => displayEntries();
-    }
+async function renderEntries() {
+  const entries = await getAllEntries();
+  entries.sort((a, b) => b.id - a.id);
 
-    // ---- Display Table with Pagination ----
-    let currentPage = 1;
-    const rowsPerPage = 10;
-    async function displayEntries() {
-      const entries = await getAllEntries();
-      entries.sort((a,b)=>b.id-a.id);
-      const tbody = document.querySelector("#dataTable tbody");
-      tbody.innerHTML = "";
-      const start = (currentPage-1)*rowsPerPage;
-      const pageEntries = entries.slice(start, start+rowsPerPage);
-      pageEntries.forEach((e,i)=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${start+i+1}</td><td>${e.name}</td><td>${e.phone}</td><td>${e.address}</td>`;
-        tbody.appendChild(tr);
-      });
-      renderPagination(entries.length);
-    }
-    function renderPagination(total) {
-      const totalPages = Math.ceil(total/rowsPerPage);
-      const pagination = document.getElementById("pagination");
-      pagination.innerHTML="";
-      for(let i=1;i<=totalPages;i++){
-        const btn=document.createElement("button");
-        btn.textContent=i;
-        if(i===currentPage) btn.style.background="#1e40af";
-        btn.onclick=()=>{currentPage=i;displayEntries();};
-        pagination.appendChild(btn);
-      }
-    }
+  const totalPages = Math.ceil(entries.length / PAGE_SIZE) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
 
-    // ---- Form Submit ----
-    document.getElementById("dataForm").addEventListener("submit", async e=>{
-      e.preventDefault();
-      const entry={name:name.value.trim(),phone:phone.value.trim(),address:address.value.trim()};
-      if(entry.name && entry.phone && entry.address){
-        try{ await addEntry(entry); displayEntries(); e.target.reset();}
-        catch{}
-      }
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageEntries = entries.slice(start, start + PAGE_SIZE);
+
+  const tbody = document.getElementById('entriesBody');
+  tbody.innerHTML = "";
+  if (!pageEntries.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No entries yet</td></tr>';
+  } else {
+    pageEntries.forEach((e, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${start + i + 1}</td>
+        <td>${e.name}</td>
+        <td>${e.phone}</td>
+        <td>${e.address}</td>
+        <td><button onclick="handleDelete(${e.id})">Delete</button></td>
+      `;
+      tbody.appendChild(tr);
     });
+  }
 
-    // ---- Export CSV ----
-    document.getElementById("exportCsvBtn").addEventListener("click", async ()=>{
-      const entries=await getAllEntries();
-      if(!entries.length){alert("No entries to export.");return;}
-      entries.sort((a,b)=>b.id-a.id);
-      let csv="Index,Name,Phone,Address\n";
-      entries.forEach((e,i)=>{csv+=`${i+1},"${e.name}","${e.phone}","${e.address}"\n`;});
-      const BOM="\uFEFF";
-      const blob=new Blob([BOM+csv],{type:"text/csv;charset=utf-8;"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      a.href=url;a.download="entries.csv";a.click();URL.revokeObjectURL(url);
-    });
+  renderPagination(totalPages);
+}
+function renderPagination(totalPages) {
+  const pagination = document.getElementById('pagination');
+  pagination.innerHTML = "";
 
-    // ---- Import CSV ----
-    document.getElementById("importCsvBtn").addEventListener("click",()=>csvFileInput.click());
-    document.getElementById("csvFileInput").addEventListener("change",e=>{
-      const file=e.target.files[0];
-      if(file){
-        const reader=new FileReader();
-        reader.onload=async evt=>{
-          const lines=evt.target.result.split("\n").slice(1);
-          for(const line of lines){
-            if(line.trim()){
-              const parts=line.split(",");
-              if(parts.length>=4){
-                const name=parts[1].replace(/"/g,"").trim();
-                const phone=parts[2].replace(/"/g,"").trim();
-                const address=parts[3].replace(/"/g,"").trim();
-                try{await addEntry({name,phone,address});}catch{}
-              }
-            }
-          }
-          displayEntries();
-        };
-        reader.readAsText(file);
-      }
-    });
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "Prev";
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.onclick = () => { currentPage--; renderEntries(); };
+  pagination.appendChild(prevBtn);
 
-    // ---- Clear All ----
-    document.getElementById("clearBtn").addEventListener("click",()=>{
-      if(confirm("Are you sure? This will delete all entries.")) clearEntries();
-    });
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === currentPage) btn.classList.add("active");
+    btn.onclick = () => { currentPage = i; renderEntries(); };
+    pagination.appendChild(btn);
+  }
 
-    // ---- PWA Service Worker ----
-    if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("service-worker.js")
-        .then(()=>console.log("Service Worker registered"))
-        .catch(err=>console.error("SW error:",err));
-    }
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Next";
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.onclick = () => { currentPage++; renderEntries(); };
+  pagination.appendChild(nextBtn);
+}
+
+async function handleDelete(id) {
+  await deleteEntry(id);
+  renderEntries();
+}
+
+document.getElementById('entryForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const newEntry = { 
+    name: fd.get('name').trim(), 
+    phone: fd.get('phone').trim(), 
+    address: fd.get('address').trim() 
+  };
+
+  const all = await getAllEntries();
+  const duplicate = all.find(e => e.name.toLowerCase() === newEntry.name.toLowerCase() || e.phone === newEntry.phone);
+  if (duplicate) {
+    alert("Duplicate entry: Name or Phone already exists.");
+    return;
+  }
+
+  await addEntry(newEntry);
+  e.target.reset();
+  renderEntries();
+});
+
+document.getElementById('exportCsvBtn').addEventListener('click', async () => {
+  const entries = await getAllEntries();
+  if (!entries.length) {
+    alert("No entries to export.");
+    return;
+  }
+  entries.sort((a, b) => b.id - a.id);
+  let csv = "Index,Name,Phone,Address\n";
+  entries.forEach((e, i) => {
+    csv += `${i+1},"${e.name}","${e.phone}","${e.address}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'entries.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('deleteAllBtn').addEventListener('click', async () => {
+  if (confirm("Are you sure you want to delete all entries?")) {
+    await deleteAllEntries();
+    renderEntries();
+  }
+});
+
+renderEntries();
+
+// --- PWA Install Button ---
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = "flex";
+});
+
+installBtn.addEventListener("click", async () => {
+  installBtn.style.display = "none";
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log("User response to install:", outcome);
+  deferredPrompt = null;
+});
+
+// --- Register service worker ---
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch(err => console.error("SW registration failed:", err));
+}
   </script>
 </body>
 </html>
