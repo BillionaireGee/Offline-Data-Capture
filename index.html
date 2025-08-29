@@ -14,7 +14,7 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fb; color: #333; }
     h1 { text-align: center; color: #1877F2; }
-    form { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 20px; }
+    form { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 10px; }
     label { display: block; margin: 10px 0; font-weight: bold; font-size: 14px; }
     input { padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 8px; margin-top: 4px; font-size: 14px; }
     button { padding: 10px 16px; border: none; border-radius: 8px; background: #1877F2; color: white; font-size: 14px; cursor: pointer; margin-top: 10px; }
@@ -33,7 +33,7 @@
     .pagination { display: flex; justify-content: center; margin-top: 15px; }
     .pagination button { margin: 0 3px; padding: 6px 12px; border-radius: 6px; border: none; background: #ddd; cursor: pointer; }
     .pagination button.active { background: #1877F2; color: #fff; }
-    #installBtn { display: none; background: #2563eb; color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; margin: 15px auto; display: flex; align-items: center; justify-content: center; gap: 8px; text-align:center; }
+    #installBtn { display: none; background: #2563eb; color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; margin: 15px auto; display: flex; align-items: center; justify-content: center; gap: 8px; text-align:center; max-width: 300px; }
 
     /* iOS overlay instruction */
     #iosInstallOverlay {
@@ -52,12 +52,6 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       cursor: pointer;
     }
-    #iosInstallOverlay img {
-      vertical-align: middle;
-      margin-left: 6px;
-      width: 18px;
-      height: 18px;
-    }
   </style>
 </head>
 <body>
@@ -70,12 +64,12 @@
     <button type="submit">Save Entry</button>
   </form>
 
-  <!-- Install PWA button -->
+  <!-- Install PWA button under form -->
   <button id="installBtn">📲 Install App</button>
 
   <!-- iOS instruction overlay -->
   <div id="iosInstallOverlay">
-    📲 On iOS: Tap <strong>Share</strong> → <strong>Add to Home Screen</strong>
+    📲 On iOS: Tap <strong>Share</strong> → <strong>Add to Home Screen</strong> (tap to dismiss)
   </div>
 
   <div class="toolbar">
@@ -100,7 +94,6 @@
     const PAGE_SIZE = 10;
     let currentPage = 1;
 
-    // --- IndexedDB ---
     function openDB() {
       return new Promise((resolve, reject) => {
         const req = indexedDB.open(DB_NAME, DB_VERSION);
@@ -141,7 +134,6 @@
       return tx.complete;
     }
 
-    // --- Render functions ---
     async function renderEntries() {
       const entries = await getAllEntries();
       entries.sort((a,b)=>b.id-a.id);
@@ -165,7 +157,6 @@
 
     async function handleDelete(id){ await deleteEntry(id); renderEntries(); }
 
-    // --- Form submission ---
     document.getElementById('entryForm').addEventListener('submit', async e=>{
       e.preventDefault();
       const fd=new FormData(e.target);
@@ -176,7 +167,6 @@
       await addEntry(newEntry); e.target.reset(); renderEntries();
     });
 
-    // --- CSV export ---
     document.getElementById('exportCsvBtn').addEventListener('click', async ()=>{
       const entries=await getAllEntries();
       if(!entries.length){ alert("No entries to export."); return; }
@@ -189,14 +179,13 @@
       document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     });
 
-    // --- Delete all ---
     document.getElementById('deleteAllBtn').addEventListener('click', async ()=>{
       if(confirm("Are you sure you want to delete all entries?")){ await deleteAllEntries(); renderEntries(); }
     });
 
     renderEntries();
 
-    // --- PWA Install Button ---
+    // --- PWA Install ---
     let deferredPrompt;
     const installBtn=document.getElementById("installBtn");
     const iosOverlay=document.getElementById("iosInstallOverlay");
@@ -204,9 +193,11 @@
     function isiOS(){ return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase()); }
 
     if(isiOS()){
-      // Show instruction overlay
-      iosOverlay.style.display = "block";
-      iosOverlay.onclick = () => { iosOverlay.style.display = "none"; };
+      iosOverlay.style.display="block";
+      iosOverlay.onclick = () => { iosOverlay.style.display="none"; };
+      installBtn.style.display="block";
+      installBtn.textContent="📲 On iOS: Tap Share → Add to Home Screen";
+      installBtn.onclick = () => { alert("Use the Safari Share button and select 'Add to Home Screen'"); };
     } else {
       window.addEventListener("beforeinstallprompt",(e)=>{
         e.preventDefault();
@@ -223,7 +214,6 @@
       });
     }
 
-    // --- Register service worker ---
     if("serviceWorker" in navigator){
       navigator.serviceWorker.register("sw.js")
         .then(()=>console.log("Service Worker registered"))
