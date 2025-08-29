@@ -11,8 +11,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DataCapture">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+  <link rel="apple-touch-startup-image" href="icons/splash.png">
 
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fb; color: #333; }
@@ -226,7 +228,7 @@
 
     if (isiOS()) {
       installBtn.style.display = 'block';
-      installBtn.textContent = "📲 On iOS: Tap 'Share' → 'Add to Home Screen'";
+      installBtn.textContent = "📲 iOS: Tap 'Share' → 'Add to Home Screen' in Safari";
       installBtn.onclick = () => { alert("Use Safari's Share button and select 'Add to Home Screen'"); };
     } else {
       window.addEventListener("beforeinstallprompt", e => {
