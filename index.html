@@ -6,85 +6,165 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2563eb">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- iOS PWA meta tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="DataCapture">
-
-  <!-- iOS icons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
-
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fb; color: #333; }
-    h1 { text-align: center; color: #1877F2; }
-    form { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); max-width: 400px; margin: 60px auto 20px; }
-    label { display: block; margin: 10px 0; font-weight: bold; font-size: 14px; }
-    input { padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 8px; margin-top: 4px; font-size: 14px; }
-    button { padding: 10px 16px; border: none; border-radius: 8px; background: #1877F2; color: white; font-size: 14px; cursor: pointer; margin-top: 10px; }
-    button:hover { background: #0f5ed7; }
-    .toolbar { max-width: 60%; margin: 0 auto 10px; display: flex; justify-content: flex-end; }
-    .toolbar button { background: #4caf50; margin-left: 10px; }
-    .toolbar button.delete-all { background: #e53935; }
-    .toolbar button.delete-all:hover { background: #c62828; }
-    .table-container { width: 60%; margin: 0 auto; }
-    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; }
-    th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; }
-    th { background: #1877F2; color: white; }
-    tr:nth-child(even) { background: #f9f9f9; }
-    td button { background: #e53935; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-    td button:hover { background: #c62828; }
-    .pagination { display: flex; justify-content: center; margin-top: 15px; }
-    .pagination button { margin: 0 3px; padding: 6px 12px; border-radius: 6px; border: none; background: #ddd; cursor: pointer; }
-    .pagination button.active { background: #1877F2; color: #fff; }
-
-    /* iOS install banner */
-    #installBanner {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: #2563eb;
-      color: white;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f7fb;
+      color: #333;
+    }
+    h1 {
       text-align: center;
-      padding: 12px 0;
+      color: #1877F2;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: 0 auto 20px;
+    }
+    label {
+      display: block;
+      margin: 10px 0;
       font-weight: bold;
-      z-index: 1000;
       font-size: 14px;
     }
-    #installBanner button {
-      margin-left: 10px;
-      background: white;
-      color: #2563eb;
+    input {
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 4px;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px 16px;
       border: none;
-      padding: 4px 8px;
+      border-radius: 8px;
+      background: #1877F2;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0f5ed7;
+    }
+    .toolbar {
+      max-width: 60%;
+      margin: 0 auto 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .toolbar button {
+      background: #4caf50;
+      margin-left: 10px;
+    }
+    .toolbar button.delete-all {
+      background: #e53935;
+    }
+    .toolbar button.delete-all:hover {
+      background: #c62828;
+    }
+    .table-container {
+      width: 55%;
+      margin: 0 auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    th {
+      background: #1877F2;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    td button {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 6px 10px;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 12px;
+    }
+    td button:hover {
+      background: #c62828;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .pagination button {
+      margin: 0 3px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background: #ddd;
+      cursor: pointer;
+    }
+    .pagination button.active {
+      background: #1877F2;
+      color: #fff;
+    }
+    #installBtn {
+      display: none;
+      background: white;
+      border: 2px solid #1877F2;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 15px auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #installBtn img {
+      width: 20px;
+      height: 20px;
     }
   </style>
 </head>
 <body>
-  <br><br><br>
-  <!-- iOS Install Banner -->
-  <div id="installBanner">
-    📲 Install this app: Tap <strong>Share → Add to Home Screen</strong>
-    <button id="closeBanner">X</button>
-  </div>
-
   <h1>Offline Data Capture</h1>
 
   <form id="entryForm">
-    <label>Name: <input type="text" name="name" required></label>
-    <label>Phone: <input type="number" name="phone" required inputmode="numeric" pattern="[0-9]*" maxlength="11" oninput="this.value=this.value.slice(0,11)"></label>
-    <label>Address: <input type="text" name="address" required></label>
+    <label>
+      Name:
+      <input type="text" name="name" required>
+    </label>
+    <label>
+      Phone:
+      <input type="number" name="phone" required inputmode="numeric" pattern="[0-9]*" maxlength="11" oninput="this.value=this.value.slice(0,11)">
+    </label>
+    <label>
+      Address:
+      <input type="text" name="address" required>
+    </label>
     <button type="submit">Save Entry</button>
+    <button id="installBtn" style="display:none; padding:10px; background:#2563eb; color:white; border:none; border-radius:5px; cursor:pointer;">
+  📲 Install App
+</button>
   </form>
 
-  <!-- Android/desktop Install button -->
-  <button id="installBtn" style="display:none; max-width:400px; margin:10px auto 20px; padding:12px; background:#2563eb; color:white; border-radius:12px; border:none; font-size:14px; cursor:pointer; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.15);">📲 Install App</button>
+  <!-- Install PWA button -->
+  <button id="installBtn">
+    <img src="icon-512.png" alt="Install Icon">
+    Install App
+  </button>
 
   <div class="toolbar">
     <button id="exportCsvBtn">Export CSV</button>
@@ -94,7 +174,9 @@
   <div class="table-container">
     <table>
       <thead>
-        <tr><th>#</th><th>Name</th><th>Phone</th><th>Address</th><th>Action</th></tr>
+        <tr>
+          <th>#</th><th>Name</th><th>Phone</th><th>Address</th><th>Action</th>
+        </tr>
       </thead>
       <tbody id="entriesBody"></tbody>
     </table>
@@ -102,159 +184,215 @@
   </div>
 
   <script>
-    const DB_NAME = 'offline_db';
-    const STORE = 'entries';
-    const DB_VERSION = 1;
-    const PAGE_SIZE = 10;
-    let currentPage = 1;
+const DB_NAME = 'offline_db';
+const STORE = 'entries';
+const DB_VERSION = 1;
+const PAGE_SIZE = 10;
+let currentPage = 1;
 
-    async function openDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, DB_VERSION);
-        req.onupgradeneeded = () => req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    }
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function addEntry(data) {
+  const db = await openDB();
+  const tx = db.transaction(STORE, 'readwrite');
+  tx.objectStore(STORE).add(data);
+  return tx.complete;
+}
+async function getAllEntries() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function deleteEntry(id) {
+  const db = await openDB();
+  const tx = db.transaction(STORE, 'readwrite');
+  tx.objectStore(STORE).delete(id);
+  return tx.complete;
+}
+async function deleteAllEntries() {
+  const db = await openDB();
+  const tx = db.transaction(STORE, 'readwrite');
+  tx.objectStore(STORE).clear();
+  return tx.complete;
+}
 
-    async function addEntry(data) {
-      const db = await openDB();
-      const tx = db.transaction(STORE, 'readwrite');
-      tx.objectStore(STORE).add(data);
-      return tx.complete;
-    }
+async function renderEntries() {
+  const entries = await getAllEntries();
+  entries.sort((a, b) => b.id - a.id);
 
-    async function getAllEntries() {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE, 'readonly');
-        const req = tx.objectStore(STORE).getAll();
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    }
+  const totalPages = Math.ceil(entries.length / PAGE_SIZE) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
 
-    async function deleteEntry(id) { const db = await openDB(); const tx = db.transaction(STORE, 'readwrite'); tx.objectStore(STORE).delete(id); return tx.complete; }
-    async function deleteAllEntries() { const db = await openDB(); const tx = db.transaction(STORE, 'readwrite'); tx.objectStore(STORE).clear(); return tx.complete; }
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageEntries = entries.slice(start, start + PAGE_SIZE);
 
-    async function renderEntries() {
-      const entries = await getAllEntries();
-      entries.sort((a, b) => b.id - a.id);
-      const totalPages = Math.ceil(entries.length / PAGE_SIZE) || 1;
-      if (currentPage > totalPages) currentPage = totalPages;
-      const start = (currentPage - 1) * PAGE_SIZE;
-      const pageEntries = entries.slice(start, start + PAGE_SIZE);
-      const tbody = document.getElementById('entriesBody');
-      tbody.innerHTML = "";
-      if (!pageEntries.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No entries yet</td></tr>';
-      } else {
-        pageEntries.forEach((e, i) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${start+i+1}</td><td>${e.name}</td><td>${e.phone}</td><td>${e.address}</td><td><button onclick="handleDelete(${e.id})">Delete</button></td>`;
-          tbody.appendChild(tr);
-        });
-      }
-      renderPagination(Math.ceil(entries.length / PAGE_SIZE) || 1);
-    }
-
-    function renderPagination(totalPages) {
-      const pagination = document.getElementById('pagination');
-      pagination.innerHTML = "";
-      const prevBtn = document.createElement("button");
-      prevBtn.textContent = "Prev";
-      prevBtn.disabled = currentPage === 1;
-      prevBtn.onclick = () => { currentPage--; renderEntries(); };
-      pagination.appendChild(prevBtn);
-      for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = i;
-        if (i === currentPage) btn.classList.add("active");
-        btn.onclick = () => { currentPage = i; renderEntries(); };
-        pagination.appendChild(btn);
-      }
-      const nextBtn = document.createElement("button");
-      nextBtn.textContent = "Next";
-      nextBtn.disabled = currentPage === totalPages;
-      nextBtn.onclick = () => { currentPage++; renderEntries(); };
-      pagination.appendChild(nextBtn);
-    }
-
-    async function handleDelete(id) { await deleteEntry(id); renderEntries(); }
-
-    document.getElementById('entryForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const newEntry = { name: fd.get('name').trim(), phone: fd.get('phone').trim(), address: fd.get('address').trim() };
-      const all = await getAllEntries();
-      const duplicate = all.find(e => e.name.toLowerCase() === newEntry.name.toLowerCase() || e.phone === newEntry.phone);
-      if (duplicate) { alert("Duplicate entry: Name or Phone already exists."); return; }
-      await addEntry(newEntry);
-      e.target.reset();
-      renderEntries();
+  const tbody = document.getElementById('entriesBody');
+  tbody.innerHTML = "";
+  if (!pageEntries.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No entries yet</td></tr>';
+  } else {
+    pageEntries.forEach((e, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${start + i + 1}</td>
+        <td>${e.name}</td>
+        <td>${e.phone}</td>
+        <td>${e.address}</td>
+        <td><button onclick="handleDelete(${e.id})">Delete</button></td>
+      `;
+      tbody.appendChild(tr);
     });
+  }
 
-    document.getElementById('exportCsvBtn').addEventListener('click', async () => {
-      const entries = await getAllEntries();
-      if (!entries.length) { alert("No entries to export."); return; }
-      entries.sort((a, b) => b.id - a.id);
-      let csv = "Index,Name,Phone,Address\n";
-      entries.forEach((e, i) => { csv += `${i+1},"${e.name}","${e.phone}","${e.address}"\n`; });
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'entries.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
+  renderPagination(totalPages);
+}
+function renderPagination(totalPages) {
+  const pagination = document.getElementById('pagination');
+  pagination.innerHTML = "";
 
-    document.getElementById('deleteAllBtn').addEventListener('click', async () => {
-      if (confirm("Are you sure you want to delete all entries?")) { await deleteAllEntries(); renderEntries(); }
-    });
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "Prev";
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.onclick = () => { currentPage--; renderEntries(); };
+  pagination.appendChild(prevBtn);
 
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === currentPage) btn.classList.add("active");
+    btn.onclick = () => { currentPage = i; renderEntries(); };
+    pagination.appendChild(btn);
+  }
+
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Next";
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.onclick = () => { currentPage++; renderEntries(); };
+  pagination.appendChild(nextBtn);
+}
+
+async function handleDelete(id) {
+  await deleteEntry(id);
+  renderEntries();
+}
+
+document.getElementById('entryForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const newEntry = { 
+    name: fd.get('name').trim(), 
+    phone: fd.get('phone').trim(), 
+    address: fd.get('address').trim() 
+  };
+
+  const all = await getAllEntries();
+  const duplicate = all.find(e => e.name.toLowerCase() === newEntry.name.toLowerCase() || e.phone === newEntry.phone);
+  if (duplicate) {
+    alert("Duplicate entry: Name or Phone already exists.");
+    return;
+  }
+
+  await addEntry(newEntry);
+  e.target.reset();
+  renderEntries();
+});
+
+document.getElementById('exportCsvBtn').addEventListener('click', async () => {
+  const entries = await getAllEntries();
+  if (!entries.length) {
+    alert("No entries to export.");
+    return;
+  }
+  entries.sort((a, b) => b.id - a.id);
+  let csv = "Index,Name,Phone,Address\n";
+  entries.forEach((e, i) => {
+    csv += `${i+1},"${e.name}","${e.phone}","${e.address}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'entries.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('deleteAllBtn').addEventListener('click', async () => {
+  if (confirm("Are you sure you want to delete all entries?")) {
+    await deleteAllEntries();
     renderEntries();
+  }
+});
 
-    // --- PWA Install / iOS Banner ---
-    let deferredPrompt;
-    const installBtn = document.getElementById("installBtn");
-    const installBanner = document.getElementById("installBanner");
-    const closeBanner = document.getElementById("closeBanner");
+renderEntries();
 
-    function isiOS() {
-      return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-    }
+// --- PWA Install Button ---
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
 
-    // Show iOS banner if not already installed
-    if (isiOS() && !window.navigator.standalone) {
-      installBanner.style.display = 'block';
-      closeBanner.onclick = () => installBanner.style.display = 'none';
-    } else {
-      // Android/Desktop PWA
-      window.addEventListener("beforeinstallprompt", e => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.style.display = 'block';
-      });
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = "flex";
+});
 
-      installBtn.addEventListener("click", async () => {
-        if (!deferredPrompt) return;
-        installBtn.style.display = 'none';
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log("User response to install:", outcome);
-        deferredPrompt = null;
-      });
-    }
+installBtn.addEventListener("click", async () => {
+  installBtn.style.display = "none";
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log("User response to install:", outcome);
+  deferredPrompt = null;
+});
 
-    // --- Service worker ---
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("Service Worker registered"))
-        .catch(err => console.error("SW registration failed:", err));
-    }
+// --- Register service worker ---
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch(err => console.error("SW registration failed:", err));
+}
+
+//-------------------
+
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  // Stop the default mini-infobar
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // Show your custom button
+  const installBtn = document.getElementById("installBtn");
+  if (installBtn) installBtn.style.display = "block";
+
+  installBtn.addEventListener("click", () => {
+    installBtn.style.display = "none";
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === "accepted") {
+        console.log("✅ PWA installed");
+      } else {
+        console.log("❌ PWA installation dismissed");
+      }
+      deferredPrompt = null;
+    });
+  });
+});
+
+    
   </script>
 </body>
 </html>
