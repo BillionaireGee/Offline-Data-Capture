@@ -20,7 +20,7 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fb; color: #333; }
     h1 { text-align: center; color: #1877F2; }
-    form { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 20px; }
+    form { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); max-width: 400px; margin: 60px auto 20px; }
     label { display: block; margin: 10px 0; font-weight: bold; font-size: 14px; }
     input { padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 8px; margin-top: 4px; font-size: 14px; }
     button { padding: 10px 16px; border: none; border-radius: 8px; background: #1877F2; color: white; font-size: 14px; cursor: pointer; margin-top: 10px; }
@@ -40,24 +40,39 @@
     .pagination button { margin: 0 3px; padding: 6px 12px; border-radius: 6px; border: none; background: #ddd; cursor: pointer; }
     .pagination button.active { background: #1877F2; color: #fff; }
 
-    /* iOS/Android install button/banner */
-    #installBtn {
+    /* iOS install banner */
+    #installBanner {
       display: none;
-      max-width: 400px;
-      margin: 10px auto 20px;
-      padding: 12px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
       background: #2563eb;
       color: white;
-      border-radius: 12px;
-      border: none;
-      font-size: 14px;
-      cursor: pointer;
       text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 12px 0;
+      font-weight: bold;
+      z-index: 1000;
+      font-size: 14px;
+    }
+    #installBanner button {
+      margin-left: 10px;
+      background: white;
+      color: #2563eb;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+  <!-- iOS Install Banner -->
+  <div id="installBanner">
+    📲 Install this app: Tap <strong>Share → Add to Home Screen</strong>
+    <button id="closeBanner">X</button>
+  </div>
+
   <h1>Offline Data Capture</h1>
 
   <form id="entryForm">
@@ -67,8 +82,8 @@
     <button type="submit">Save Entry</button>
   </form>
 
-  <!-- Install PWA button -->
-  <button id="installBtn">📲 Install App</button>
+  <!-- Android/desktop Install button -->
+  <button id="installBtn" style="display:none; max-width:400px; margin:10px auto 20px; padding:12px; background:#2563eb; color:white; border-radius:12px; border:none; font-size:14px; cursor:pointer; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.15);">📲 Install App</button>
 
   <div class="toolbar">
     <button id="exportCsvBtn">Export CSV</button>
@@ -139,7 +154,7 @@
           tbody.appendChild(tr);
         });
       }
-      renderPagination(totalPages);
+      renderPagination(Math.ceil(entries.length / PAGE_SIZE) || 1);
     }
 
     function renderPagination(totalPages) {
@@ -201,22 +216,28 @@
 
     renderEntries();
 
-    // --- PWA Install Button ---
+    // --- PWA Install / iOS Banner ---
     let deferredPrompt;
     const installBtn = document.getElementById("installBtn");
+    const installBanner = document.getElementById("installBanner");
+    const closeBanner = document.getElementById("closeBanner");
 
-    function isiOS() { return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase()); }
+    function isiOS() {
+      return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+    }
 
-    if (isiOS()) {
-      installBtn.style.display = 'block';
-      installBtn.textContent = "📲 On iOS: Tap 'Share' → 'Add to Home Screen'";
-      installBtn.onclick = () => { alert("Use Safari's Share button and select 'Add to Home Screen'"); };
+    // Show iOS banner if not already installed
+    if (isiOS() && !window.navigator.standalone) {
+      installBanner.style.display = 'block';
+      closeBanner.onclick = () => installBanner.style.display = 'none';
     } else {
+      // Android/Desktop PWA
       window.addEventListener("beforeinstallprompt", e => {
         e.preventDefault();
         deferredPrompt = e;
         installBtn.style.display = 'block';
       });
+
       installBtn.addEventListener("click", async () => {
         if (!deferredPrompt) return;
         installBtn.style.display = 'none';
