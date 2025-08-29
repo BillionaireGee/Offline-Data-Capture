@@ -33,7 +33,7 @@
     .pagination { display: flex; justify-content: center; margin-top: 15px; }
     .pagination button { margin: 0 3px; padding: 6px 12px; border-radius: 6px; border: none; background: #ddd; cursor: pointer; }
     .pagination button.active { background: #1877F2; color: #fff; }
-    #installBtn { display: none; background: #2563eb; color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; margin: 15px auto; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    #installBtn { display: none; background: #2563eb; color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; margin: 15px auto; display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
   </style>
 </head>
 <body>
@@ -47,7 +47,7 @@
   </form>
 
   <!-- Install PWA button / iOS instruction -->
-  <button id="installBtn">📲 Install App</button>
+  <button id="installBtn" type="button">📲 Install App</button>
 
   <div class="toolbar">
     <button id="exportCsvBtn">Export CSV</button>
@@ -138,7 +138,6 @@ renderEntries();
 // --- PWA Install Button ---
 let deferredPrompt;
 const installBtn=document.getElementById("installBtn");
-
 function isiOS(){ return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase()); }
 
 if(isiOS()){
@@ -149,6 +148,7 @@ if(isiOS()){
     e.preventDefault(); deferredPrompt=e; installBtn.style.display="flex";
   });
   installBtn.addEventListener("click", async ()=>{
+    if(!deferredPrompt) return;
     installBtn.style.display="none"; deferredPrompt.prompt();
     const {outcome}=await deferredPrompt.userChoice;
     console.log("User response to install:", outcome);
